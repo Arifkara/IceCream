@@ -164,6 +164,8 @@ final class PrivateDatabaseManager: DatabaseManager {
             case .success:
                 guard let syncObject = self.syncObjects.first(where: { $0.zoneID == zoneId }) else { return }
                 syncObject.zoneChangesToken = token
+                // Notify the app to reload data
+                NotificationCenter.default.post(name: Notifications.cloudKitNewData.name, object: nil, userInfo: ["zoneId": zoneId])
             case .retry(let timeToWait, _):
                 ErrorHandler.shared.retryOperationIfPossible(retryAfter: timeToWait, block: {
                     self.fetchChangesInZones(callback)
